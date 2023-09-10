@@ -1,0 +1,35 @@
+version: '3.1'
+services:
+   auth-data:
+    image: postgres:latest
+    restart: always
+    container_name: auth-database
+    environment:
+      POSTGRES_USER: roixy
+      POSTGRES_PASSWORD: mysecret
+      POSTGRES_DB: Auth
+    networks:
+      - my_network
+    ports:
+      - '5432:5432'
+    volumes:
+      - auth-data:/var/lib/postgresql/data
+   community-data:
+    image: postgres:latest
+    restart: always
+    container_name: community-database
+    environment:
+      POSTGRES_USER: roixy
+      POSTGRES_PASSWORD: mysecret
+      POSTGRES_DB: Community
+    networks:
+      - my_network
+    ports:
+      - '5433:5432'
+    volumes:
+      - community-data:/var/lib/postgresql/data
+volumes:
+  auth-data:
+  community-data:
+networks:
+  my_network:
