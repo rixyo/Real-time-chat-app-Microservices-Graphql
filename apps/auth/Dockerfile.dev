@@ -1,0 +1,19 @@
+# Use an official Node.js runtime as the base image
+FROM node:alpine As development
+
+# Set the working directory inside the container
+WORKDIR /usr/src/app
+
+# Copy package.json and package-lock.json to leverage Docker layer caching
+COPY package*.json ./
+
+# Install all dependencies, including devDependencies
+RUN yarn install
+
+# Copy the rest of your application code to the container
+COPY . .
+
+
+
+# Start your application (customize this command based on your app)
+CMD ["yarn", "start:dev", "auth"]

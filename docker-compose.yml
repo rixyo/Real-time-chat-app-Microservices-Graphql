@@ -1,5 +1,49 @@
 version: '3.1'
 services:
+   auth-service:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./apps/auth/Dockerfile.dev
+    env_file:
+      - ./apps/auth/.env
+    container_name: auth-service
+    networks:
+      - new_network
+    depends_on:
+      - auth-data
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '5000:5000'
+   community-service:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./apps/community/Dockerfile.dev
+    env_file:
+      - ./apps/community/.env
+    container_name: community-service
+    networks:
+      - new_network
+    depends_on:
+      - community-data
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '3001:3001'
+   rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    container_name: rabbitmq
+    networks:
+      - new_network
+    ports:
+      - '5672:5672'
    auth-data:
     image: postgres:latest
     restart: always
@@ -9,7 +53,7 @@ services:
       POSTGRES_PASSWORD: mysecret
       POSTGRES_DB: Auth
     networks:
-      - my_network
+      - new_network
     ports:
       - '5432:5432'
     volumes:
@@ -23,7 +67,7 @@ services:
       POSTGRES_PASSWORD: mysecret
       POSTGRES_DB: Community
     networks:
-      - my_network
+      - new_network
     ports:
       - '5433:5432'
     volumes:
@@ -32,4 +76,4 @@ volumes:
   auth-data:
   community-data:
 networks:
-  my_network:
+  new_network:

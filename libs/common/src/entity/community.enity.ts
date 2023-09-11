@@ -14,18 +14,18 @@ export class Community {
   id: string;
   @Column({ length: 100 })
   name: string;
-  @Column()
-  avatalUrl?: string;
+  @Column({ nullable: true })
+  avatalUrl: string;
   @Column({ length: 100 })
   description: string;
   @Column()
   creatorId: string;
   @Column({ default: new Date() })
   createdAt: Date;
-  @Column()
+  @Column({ nullable: true })
   updatedAt: Date;
   @ManyToMany(() => User, (user) => user.communities)
-  @JoinTable()
+  @JoinTable({ name: 'community_users' })
   users: User[];
   @OneToMany(() => CommunityMessage, (message) => message.community)
   messages: CommunityMessage[];

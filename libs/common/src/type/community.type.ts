@@ -19,6 +19,6 @@ export class CommunityType {
   updatedAt: Date;
   @Field((type) => [UserType], { nullable: 'itemsAndList' })
   users: UserType[];
-  @Field((type) => [CommunityMessageType], { nullable: 'itemsAndList' })
-  messages: CommunityMessageType[];
+  //  @Field((type) => [CommunityMessageType], { nullable: 'itemsAndList' })
+  //messages: CommunityMessageType[];
 }

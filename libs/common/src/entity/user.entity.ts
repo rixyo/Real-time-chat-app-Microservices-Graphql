@@ -22,10 +22,10 @@ export class User {
   password: string;
   @Column({ default: new Date() })
   createdAt: Date;
-  @Column()
+  @Column({ nullable: true })
   updatedAt: Date;
   @ManyToMany(() => Community, (community) => community.users)
-  @JoinTable()
+  @JoinTable({ name: 'community_users' })
   communities: Community[];
   @OneToMany(() => CommunityMessage, (message) => message.user)
   messages: CommunityMessage[];

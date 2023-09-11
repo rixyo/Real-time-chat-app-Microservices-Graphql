@@ -10,11 +10,12 @@ pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
-
+core
 # OS
 .DS_Store
 # env
 .env
+.gitignore
 # Tests
 /coverage
 /.nyc_output

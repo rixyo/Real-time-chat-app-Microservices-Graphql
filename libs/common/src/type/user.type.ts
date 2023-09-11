@@ -13,8 +13,8 @@ export class UserType {
   createdAt: Date;
   @Field()
   updatedAt: Date;
-  //@Field(() => [CommunityType], { nullable: 'itemsAndList' })
-  //communities: CommunityType[];
+  @Field(() => [CommunityType], { nullable: 'itemsAndList' })
+  communities: CommunityType[];
   //@Field(() => [CommunityMessageType], { nullable: 'itemsAndList' })
   // messages: CommunityMessageType[];
 }

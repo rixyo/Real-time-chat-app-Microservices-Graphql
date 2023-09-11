@@ -1,28 +1,34 @@
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { User } from '@app/common';
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RegistationInput } from './inputs/registration.input';
 import { AuthorizationType } from './type/authorization.type';
 import { LoginInput } from './inputs/login.input';
 import { UserType } from '../../../libs/common/src/type/user.type';
+import { ClientProxy } from '@nestjs/microservices';
+import { COMMUNITY_SERVICE } from './constants/services';
+import { lastValueFrom } from 'rxjs';
+import { GettingDataFromCommunityService } from './auth.controller';
+import { DeleteType } from './type/delete.type';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+    @Inject(COMMUNITY_SERVICE) private readonly authServiceClient: ClientProxy,
   ) {}
   async createStudent(
     createUser: RegistationInput,
   ): Promise<AuthorizationType> {
-    const existingStudent = await this.userRepository.findOne({
+    const existingUser = await this.userRepository.findOne({
       where: {
         email: createUser.email,
       },
     });
-    if (existingStudent) throw new ConflictException('Student already exists');
+    if (existingUser) throw new ConflictException('User already exists');
     const password = await this.hashPassword(createUser.password);
     const user = this.userRepository.create({
       fullName: createUser.fullName,
@@ -54,19 +60,25 @@ export class AuthService {
   }
   async getUser(id: string): Promise<UserType> {
     const query = this.userRepository.createQueryBuilder('user');
-    query
-      .where('user.id = :id', { id })
-      .leftJoinAndSelect('user.communities', 'communities');
+    query.where('user.id = :id', { id });
     const user = await query.getOne();
     return user;
   }
-  async getUserCommunities(id: string) {
-    const query = this.userRepository.createQueryBuilder('user');
-    query
-      .where('user.id = :id', { id })
-      .leftJoinAndSelect('user.communities', 'communities');
-    const user = await query.getOne();
-    return user;
+  async assignUserToCommunity(
+    data: GettingDataFromCommunityService,
+  ): Promise<void> {
+    const users = await this.userRepository
+      .createQueryBuilder('user')
+      .whereInIds(data.userIds)
+      .getMany();
+    await lastValueFrom(
+      this.authServiceClient.emit('return-users-from-auth-service', {
+        users,
+      }),
+    );
+  }
+  async getUsers(): Promise<UserType[]> {
+    return await this.userRepository.find();
   }
   private async hashPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, 10);
@@ -85,5 +97,11 @@ export class AuthService {
       fullName: fullName,
     };
     return jwt.sign(dataStoredInToken, secret, { expiresIn });
+  }
+  async deleteAllUsers(): Promise<DeleteType> {
+    await this.userRepository.delete({});
+    return {
+      message: 'All users deleted',
+    };
   }
 }
