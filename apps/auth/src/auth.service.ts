@@ -20,26 +20,25 @@ export class AuthService {
     @InjectRepository(User) private userRepository: Repository<User>,
     @Inject(COMMUNITY_SERVICE) private readonly authServiceClient: ClientProxy,
   ) {}
-  async createStudent(
-    createUser: RegistationInput,
+  async register(
+    registrationInput: RegistationInput,
   ): Promise<AuthorizationType> {
-    const existingUser = await this.userRepository.findOne({
-      where: {
-        email: createUser.email,
-      },
-    });
-    if (existingUser) throw new ConflictException('User already exists');
-    const password = await this.hashPassword(createUser.password);
-    const user = this.userRepository.create({
-      fullName: createUser.fullName,
-      email: createUser.email,
-      password,
-    });
-    await this.userRepository.save(user);
-    const token = await this.createToken(user.id, user.fullName);
-    return {
-      access_token: token,
-    };
+    try {
+      const hashedPassword = await this.hashPassword(
+        registrationInput.password,
+      );
+      const user = this.userRepository.create({
+        ...registrationInput,
+        password: hashedPassword,
+      });
+      await this.userRepository.save(user);
+      const token = this.createToken(user.id, user.fullName);
+      return {
+        access_token: token,
+      };
+    } catch (error) {
+      throw new ConflictException(error.message);
+    }
   }
   async login(loginInput: LoginInput): Promise<AuthorizationType> {
     const user = await this.userRepository.findOne({
@@ -53,7 +52,7 @@ export class AuthService {
       user.password,
     );
     if (!isPasswordValid) throw new ConflictException('Invalid credentials');
-    const token = await this.createToken(user.id, user.fullName);
+    const token = this.createToken(user.id, user.fullName);
     return {
       access_token: token,
     };
@@ -64,19 +63,24 @@ export class AuthService {
     const user = await query.getOne();
     return user;
   }
-  async assignUserToCommunity(
-    data: GettingDataFromCommunityService,
-  ): Promise<void> {
-    const users = await this.userRepository
-      .createQueryBuilder('user')
-      .whereInIds(data.userIds)
-      .getMany();
+  async assignUserToCommunity(data: any): Promise<void> {
+    const users = await this.userRepository.findByIds(data.userIds);
+    const userIds = users.map((user) => user.id);
     await lastValueFrom(
       this.authServiceClient.emit('return-users-from-auth-service', {
-        users,
+        userIds: userIds,
       }),
     );
   }
+  async sendComunityUser(data: any): Promise<void> {
+    const users = await this.userRepository.findByIds(data.userIds);
+    await lastValueFrom(
+      this.authServiceClient.emit('return-community-users-from-auth-service', {
+        users: users,
+      }),
+    );
+  }
+
   async getUsers(): Promise<UserType[]> {
     return await this.userRepository.find();
   }
@@ -89,7 +93,7 @@ export class AuthService {
   ): Promise<boolean> {
     return await bcrypt.compare(password, hashPassword);
   }
-  private async createToken(userId: string, fullName: string): Promise<string> {
+  private createToken(userId: string, fullName: string): string {
     const expiresIn = 60 * 60; // an hour
     const secret = 'mysupersecret';
     const dataStoredInToken = {

@@ -24,9 +24,6 @@ export class Community {
   createdAt: Date;
   @Column({ nullable: true })
   updatedAt: Date;
-  @ManyToMany(() => User, (user) => user.communities)
-  @JoinTable({ name: 'community_users' })
-  users: User[];
-  @OneToMany(() => CommunityMessage, (message) => message.community)
-  messages: CommunityMessage[];
+  @Column('uuid', { array: true, default: [] })
+  userIds: string[];
 }

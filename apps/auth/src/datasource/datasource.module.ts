@@ -8,7 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        url: 'postgres://roixy:mysecret@auth-database:5432/Auth',
+        url: configService.get<string>('DATABASE_URL'),
         entities: [User, Community, CommunityMessage],
         synchronize: true,
       }),

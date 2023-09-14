@@ -1,6 +1,4 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { UserType } from './user.type';
-import { CommunityMessageType } from './message.type';
 @ObjectType('Community')
 export class CommunityType {
   @Field((type) => ID)
@@ -17,8 +15,6 @@ export class CommunityType {
   createdAt: Date;
   @Field()
   updatedAt: Date;
-  @Field((type) => [UserType], { nullable: 'itemsAndList' })
-  users: UserType[];
-  //  @Field((type) => [CommunityMessageType], { nullable: 'itemsAndList' })
-  //messages: CommunityMessageType[];
+  @Field((type) => [ID])
+  userIds: string[];
 }

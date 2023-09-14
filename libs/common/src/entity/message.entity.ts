@@ -17,8 +17,4 @@ export class CommunityMessage {
   createdAt: Date;
   @Column()
   updatedAt: Date;
-  @ManyToOne(() => User, (user) => user.messages)
-  user: User;
-  @ManyToOne(() => Community, (community) => community.messages)
-  community: Community;
 }

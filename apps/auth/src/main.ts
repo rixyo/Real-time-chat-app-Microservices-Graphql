@@ -12,7 +12,7 @@ async function bootstrap() {
       transform: true, // this will transform the incoming data to the type of the input
     }),
   );
-  await app.listen(process.env.PORT);
+  await app.listen(process.env.PORT || 3000);
   app.connectMicroservice(rmqService.getOptions('AUTH'));
   await app.startAllMicroservices();
   Logger.log('Auth microservice is listening at ' + process.env.PORT);

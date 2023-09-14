@@ -9,14 +9,18 @@ import { CurrentUser, JWTUserType } from '@app/common';
 import { DeleteType } from './type/delete.type';
 @Resolver((of) => UserType)
 export class AuthResolver {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
+
+  @Mutation((returns) => AuthorizationType)
+  async register(
+    @Args('registrationInput') registrationInput: RegistationInput,
+  ) {
+    return await this.authService.register(registrationInput);
+  }
+
   @Mutation((returns) => AuthorizationType)
   async login(@Args('loginInput') loginInput: LoginInput) {
     return await this.authService.login(loginInput);
-  }
-  @Mutation((returns) => AuthorizationType)
-  async signup(@Args('createUser') createUser: RegistationInput) {
-    return await this.authService.createStudent(createUser);
   }
   @Query((returns) => UserType)
   async getUser(@CurrentUser() user: JWTUserType) {

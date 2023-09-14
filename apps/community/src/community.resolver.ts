@@ -6,17 +6,25 @@ import { AuthGuard, CurrentUser, JWTUserType } from '@app/common';
 import { UseGuards } from '@nestjs/common';
 import { AssignUserToCommunity } from './inputs/assignuser.input';
 import { AssignUserResponseType } from './assignuser.type';
+import { UserType } from '@app/common/type/user.type';
+
 @Resolver((of) => CommunityType)
 export class CommunityResolver {
   constructor(private communityService: CommunityService) {}
   @Mutation((returns) => CommunityType)
+  @UseGuards(AuthGuard)
   async createCommunity(
     @Args('createCommunity') createCommunity: CreateCommunityInput,
+    @CurrentUser() user: JWTUserType,
   ) {
     return await this.communityService.createCommunity(
       createCommunity,
-      'dc4a967b-0fb7-4a38-ba12-104747e72e0c',
+      user.id,
     );
+  }
+  @Mutation((returns) => AssignUserResponseType)
+  async deleteCommunitys() {
+    return await this.communityService.deleteAllCommunities();
   }
   @Query((returns) => CommunityType)
   async getCommunity(@Args('id') id: string) {
@@ -27,11 +35,19 @@ export class CommunityResolver {
     return await this.communityService.getCommunities();
   }
   @Mutation((returns) => AssignUserResponseType)
+  @UseGuards(AuthGuard)
   async assignUserToCommunity(
     @Args('assignUserToCommunity') assignUserToCommunity: AssignUserToCommunity,
+    @CurrentUser() user: JWTUserType,
   ) {
     return await this.communityService.assignUserToCommunity(
       assignUserToCommunity,
+      user.id,
     );
+  }
+  @Query((returns) => [UserType])
+  @UseGuards(AuthGuard)
+  async getUsersFromCommunity(@Args('id') id: string) {
+    return await this.communityService.getCommunityUsers(id);
   }
 }

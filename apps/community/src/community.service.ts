@@ -18,14 +18,24 @@ export class CommunityService {
     private communityRepository: Repository<Community>,
     @Inject(AUTH_SERVICE) private readonly authServiceClient: ClientProxy,
   ) {}
-  private receivedUsers: User[] = [];
+  private receivedUsersId: {
+    userIds: string[];
+  } = {
+    userIds: [], // Initialize userIds as an empty array
+  };
+  private receivedUsers: {
+    users: UserType[];
+  } = {
+    users: [], // Initialize users as an empty array
+  };
   async createCommunity(
     createCommunityInput: CreateCommunityInput,
     userId: string,
   ): Promise<Community> {
     const newCommunity = {
       ...createCommunityInput,
-      creatorId: 'dc4a967b-0fb7-4a38-ba12-104747e72e0c',
+      creatorId: userId,
+      userIds: [userId],
     };
     const community = this.communityRepository.create(newCommunity);
     return await this.communityRepository.save(community);
@@ -36,21 +46,16 @@ export class CommunityService {
     });
   }
   async getCommunities(): Promise<Community[]> {
-    const communities = await this.communityRepository
-      .createQueryBuilder('community')
-      .leftJoinAndSelect('community.users', 'user')
-      .getMany();
-    return communities;
+    return await this.communityRepository.find();
   }
   async assignUserToCommunity(
     assignUserToCommunity: AssignUserToCommunity,
+    userId: string,
   ): Promise<AssignUserResponseType> {
     await this.sendUserIdsToAuthService(assignUserToCommunity.userIds);
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    const data = this.processReceivedUsers();
+    const data = this.processReceivedUsersId();
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log(data, 'data from function');
-    console.log(data.length, 'data length');
     if (!data) {
       return {
         message: 'No users found',
@@ -63,32 +68,54 @@ export class CommunityService {
       return {
         message: 'Community not found',
       };
+    } else if (community.creatorId !== userId) {
+      return {
+        message: 'You are not the creator of this community',
+      };
+    } else if (
+      data.userIds.some((userId) => community.userIds.includes(userId))
+    ) {
+      return {
+        message: 'Users already assigned to community',
+      };
     }
-    if (!Array.isArray(community.users)) {
-      community.users = [];
-    }
-
-    // Check if the user is not already a part of the community to avoid duplicates
-    for (const user of data) {
-      if (
-        !community.users.find((existingUser) => existingUser.id === user.id)
-      ) {
-        community.users.push(user);
-      }
-    }
-
+    community.userIds.push(...data.userIds);
     try {
       await this.communityRepository.save(community);
       return {
         message: 'Users assigned to community',
       };
     } catch (error) {
-      // Handle the error, e.g., log it or return an error message
       console.error('Error assigning users to community:', error);
       return {
         message: 'Error assigning users to community',
       };
     }
+  }
+  async getCommunityUsers(communityId: string): Promise<UserType[]> {
+    try {
+      const community = await this.communityRepository.findOne({
+        where: { id: communityId },
+      });
+      if (!community) {
+        throw new Error('Community not found');
+      }
+      await this.sendCommunityUsersIdToAuthService(community.userIds);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const data = this.processReceivedUsers();
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const users = data.users;
+      return users;
+    } catch (error) {
+      console.error('Error getting community users:', error);
+      return [];
+    }
+  }
+  async deleteAllCommunities(): Promise<AssignUserResponseType> {
+    await this.communityRepository.delete({});
+    return {
+      message: 'All communities deleted',
+    };
   }
 
   private async sendUserIdsToAuthService(userIds: string[]): Promise<boolean> {
@@ -99,10 +126,28 @@ export class CommunityService {
     );
     return true;
   }
-  receiveUsersFromAuthService(data: any) {
-    this.receivedUsers = data.users;
+  private async sendCommunityUsersIdToAuthService(
+    userIds: string[],
+  ): Promise<boolean> {
+    await lastValueFrom(
+      this.authServiceClient.emit('get-community-users', {
+        userIds,
+      }),
+    );
+    return true;
   }
-  processReceivedUsers() {
+  async receiveUsersIdFromAuthService(data: any) {
+    this.receivedUsersId = data;
+  }
+  private processReceivedUsersId() {
+    // Access the receivedUsers data in this method
+    return this.receivedUsersId;
+    // Perform further processing or return the usersId
+  }
+  async receiveUsersFromAuthService(data: any) {
+    this.receivedUsers = data;
+  }
+  private processReceivedUsers() {
     // Access the receivedUsers data in this method
     return this.receivedUsers;
     // Perform further processing or return the users

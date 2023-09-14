@@ -27,10 +27,10 @@ import { AuthController } from './auth.controller';
       context: ({ req }) => ({ req }),
     }),
     DatabaseModule,
+    TypeOrmModule.forFeature([User, CommunityMessage, Community]),
     RmqModule.register({
       name: COMMUNITY_SERVICE,
     }),
-    TypeOrmModule.forFeature([User, CommunityMessage, Community]),
   ],
   providers: [AuthService, AuthResolver],
   controllers: [AuthController],

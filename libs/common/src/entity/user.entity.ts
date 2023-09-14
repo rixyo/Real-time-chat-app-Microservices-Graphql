@@ -1,14 +1,5 @@
-import {
-  Column,
-  PrimaryGeneratedColumn,
-  Entity,
-  ManyToMany,
-  Unique,
-  JoinTable,
-  OneToMany,
-} from 'typeorm';
-import { Community } from './community.enity';
-import { CommunityMessage } from './message.entity';
+import { Column, PrimaryGeneratedColumn, Entity, Unique } from 'typeorm';
+
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -24,9 +15,6 @@ export class User {
   createdAt: Date;
   @Column({ nullable: true })
   updatedAt: Date;
-  @ManyToMany(() => Community, (community) => community.users)
-  @JoinTable({ name: 'community_users' })
-  communities: Community[];
-  @OneToMany(() => CommunityMessage, (message) => message.user)
-  messages: CommunityMessage[];
+  @Column('uuid', { array: true, default: [] })
+  communityIds: string[];
 }

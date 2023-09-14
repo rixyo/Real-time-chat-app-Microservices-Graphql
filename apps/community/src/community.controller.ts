@@ -4,7 +4,7 @@ import { Controller } from '@nestjs/common';
 import { CommunityService } from './community.service';
 import { UserType } from '@app/common/type/user.type';
 export type GettingDataFromAuthService = {
-  users: UserType[];
+  userIds: string[];
 };
 @Controller()
 export class CommunityController {
@@ -18,7 +18,19 @@ export class CommunityController {
     @Ctx() context: RmqContext,
   ) {
     try {
-      this.communityService.receiveUsersFromAuthService(data);
+      await this.communityService.receiveUsersIdFromAuthService(data);
+      this.rmqService.ack(context);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  @EventPattern('return-community-users-from-auth-service')
+  async getUsersFromAuthService(
+    @Payload() data: any,
+    @Ctx() context: RmqContext,
+  ) {
+    try {
+      await this.communityService.receiveUsersFromAuthService(data);
       this.rmqService.ack(context);
     } catch (error) {
       console.log(error);
