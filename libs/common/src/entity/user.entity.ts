@@ -17,4 +17,6 @@ export class User {
   updatedAt: Date;
   @Column('uuid', { array: true, default: [] })
   communityIds: string[];
+  @Column('uuid', { array: true, default: [] })
+  messageIds: string[];
 }

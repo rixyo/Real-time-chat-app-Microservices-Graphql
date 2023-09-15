@@ -1,13 +1,4 @@
-import {
-  Column,
-  PrimaryGeneratedColumn,
-  Entity,
-  OneToMany,
-  ManyToMany,
-  JoinTable,
-} from 'typeorm';
-import { User } from './user.entity';
-import { CommunityMessage } from './message.entity';
+import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
 @Entity()
 export class Community {
   @PrimaryGeneratedColumn('uuid')
@@ -26,4 +17,6 @@ export class Community {
   updatedAt: Date;
   @Column('uuid', { array: true, default: [] })
   userIds: string[];
+  @Column('uuid', { array: true, default: [] })
+  messageIds: string[];
 }

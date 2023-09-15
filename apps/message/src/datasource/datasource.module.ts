@@ -1,4 +1,4 @@
-import { Community } from '@app/common';
+import { CommunityMessage, DirectMessage } from '@app/common';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,7 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         url: configService.get<string>('DATABASE_URL'),
-        entities: [Community],
+        entities: [CommunityMessage, DirectMessage],
         synchronize: true,
       }),
       inject: [ConfigService],

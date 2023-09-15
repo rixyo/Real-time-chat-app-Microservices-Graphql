@@ -9,16 +9,21 @@ import { AuthorizationType } from './type/authorization.type';
 import { LoginInput } from './inputs/login.input';
 import { UserType } from '../../../libs/common/src/type/user.type';
 import { ClientProxy } from '@nestjs/microservices';
-import { COMMUNITY_SERVICE } from './constants/services';
+import { COMMUNITY_SERVICE, MESSAGE_SERVICE } from './constants/services';
 import { lastValueFrom } from 'rxjs';
-import { GettingDataFromCommunityService } from './auth.controller';
+import {
+  GettingDataFromCommunityService,
+  UpdateCreatorCommunityId,
+} from './auth.controller';
 import { DeleteType } from './type/delete.type';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    @Inject(COMMUNITY_SERVICE) private readonly authServiceClient: ClientProxy,
+    @Inject(COMMUNITY_SERVICE)
+    private readonly communityServiceClient: ClientProxy,
+    @Inject(MESSAGE_SERVICE) private readonly messageServiceClient: ClientProxy,
   ) {}
   async register(
     registrationInput: RegistationInput,
@@ -63,19 +68,53 @@ export class AuthService {
     const user = await query.getOne();
     return user;
   }
+  // this method is used to assign users to a community and take userId and assignUserToCommunity as parameters
+  // has to change data type
   async assignUserToCommunity(data: any): Promise<void> {
+    try {
+      // have to change this findByIds to queryBuilder. this is working but passing all data
+      const users = await this.userRepository.findByIds(data.userIds);
+      const userIds = users.map((user) => user.id);
+      users.forEach((user) => {
+        if (user.communityIds.includes(data.communityId)) return;
+        user.communityIds.push(data.communityId);
+        this.userRepository.save(user);
+      });
+      await lastValueFrom(
+        this.communityServiceClient.emit('return-users-from-auth-service', {
+          userIds: userIds,
+        }),
+      );
+    } catch (error) {
+      console.error('Error assigning users to community:', error);
+    }
+  }
+  async updateUserForCommunity(data: UpdateCreatorCommunityId): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { id: data.userId },
+    });
+    if (user.communityIds.includes(data.communityId)) return;
+    user.communityIds.push(data.communityId);
+    await this.userRepository.save(user);
+  }
+  async sendComunityUser(data: GettingDataFromCommunityService): Promise<void> {
     const users = await this.userRepository.findByIds(data.userIds);
-    const userIds = users.map((user) => user.id);
+    console.log(users);
     await lastValueFrom(
-      this.authServiceClient.emit('return-users-from-auth-service', {
-        userIds: userIds,
-      }),
+      this.communityServiceClient.emit(
+        'return-community-users-from-auth-service',
+        {
+          users: users,
+        },
+      ),
     );
   }
-  async sendComunityUser(data: any): Promise<void> {
+  // this method is used to send back users to message service
+  async sendUsersToMessageService(data: any): Promise<void> {
+    // have to change this findByIds to queryBuilder. this is working but passing all data
     const users = await this.userRepository.findByIds(data.userIds);
     await lastValueFrom(
-      this.authServiceClient.emit('return-community-users-from-auth-service', {
+      this.messageServiceClient.emit('return-users-from-auth-service', {
         users: users,
       }),
     );

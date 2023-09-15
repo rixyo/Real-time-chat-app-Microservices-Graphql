@@ -36,8 +36,23 @@ services:
       - '5433:5432'
     volumes:
       - community-data:/var/lib/postgresql/data
+   message-data:
+    image: postgres:latest
+    restart: always
+    container_name: message-database
+    environment:
+      POSTGRES_USER: roixy
+      POSTGRES_PASSWORD: mysecret
+      POSTGRES_DB: Message
+    networks:
+      - new_network
+    ports:
+      - '5434:5432'
+    volumes:
+      - message-data:/var/lib/postgresql/data
 volumes:
   auth-data:
   community-data:
+  message-data:
 networks:
   new_network:

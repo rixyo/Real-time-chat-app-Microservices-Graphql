@@ -11,6 +11,6 @@ export class UserType {
   createdAt: Date;
   @Field()
   updatedAt: Date;
-  @Field((type) => ID)
+  @Field((type) => [ID])
   communityIds: string[];
 }

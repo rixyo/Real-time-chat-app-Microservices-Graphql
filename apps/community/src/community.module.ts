@@ -8,9 +8,9 @@ import { GraphQLUserInterceptor } from '@app/common/interceptor/user.interceptor
 import { DatabaseModule } from './datasource/datasource.module';
 import { CommunityResolver } from './community.resolver';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Community, CommunityMessage, RmqModule, User } from '@app/common';
+import { Community, RmqModule } from '@app/common';
 import * as Joi from 'joi';
-import { AUTH_SERVICE } from './constants/services';
+import { AUTH_SERVICE, MESSAGE_SERVICE } from './constants/services';
 import { CommunityController } from './community.controller';
 @Module({
   imports: [
@@ -18,6 +18,7 @@ import { CommunityController } from './community.controller';
       isGlobal: true,
       envFilePath: './apps/community/.env',
       validationSchema: Joi.object({
+        DATABASE_URL: Joi.string().required(),
         RABBIT_MQ_URI: Joi.string().required(),
         RABBIT_MQ_COMMUNITY_QUEUE: Joi.string().required(),
       }),
@@ -29,9 +30,12 @@ import { CommunityController } from './community.controller';
       context: ({ req }) => ({ req }),
     }),
     DatabaseModule,
-    TypeOrmModule.forFeature([User, CommunityMessage, Community]),
+    TypeOrmModule.forFeature([Community]),
     RmqModule.register({
       name: AUTH_SERVICE,
+    }),
+    RmqModule.register({
+      name: MESSAGE_SERVICE,
     }),
   ],
   providers: [

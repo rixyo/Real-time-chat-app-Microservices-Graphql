@@ -1,8 +1,23 @@
-import { Column, PrimaryGeneratedColumn, Entity, ManyToOne } from 'typeorm';
-import { User } from './user.entity';
-import { Community } from './community.enity';
+import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
 @Entity()
 export class CommunityMessage {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+  @Column({ length: 100 })
+  content: string;
+  @Column({ nullable: true })
+  fileUrl: string;
+  @Column()
+  userId: string;
+  @Column()
+  communityId: string;
+  @Column({ default: new Date() })
+  createdAt: Date;
+  @Column({ nullable: true })
+  updatedAt: Date;
+}
+@Entity()
+export class DirectMessage {
   @PrimaryGeneratedColumn('uuid')
   id: string;
   @Column({ length: 100 })
@@ -10,9 +25,9 @@ export class CommunityMessage {
   @Column()
   fileUrl?: string;
   @Column()
-  userId: string;
+  senderId: string;
   @Column()
-  communityId: string;
+  receiverId: string;
   @Column({ default: new Date() })
   createdAt: Date;
   @Column()

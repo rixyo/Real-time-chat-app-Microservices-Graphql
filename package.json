@@ -28,7 +28,9 @@
     "@nestjs/graphql": "^12.0.8",
     "@nestjs/microservices": "^10.2.4",
     "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/platform-socket.io": "^10.2.5",
     "@nestjs/typeorm": "^10.0.0",
+    "@nestjs/websockets": "^10.2.5",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.3",
     "bcrypt": "^5.1.1",
@@ -40,6 +42,7 @@
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
+    "socket.io": "^4.7.2",
     "typeorm": "^0.3.17"
   },
   "devDependencies": {

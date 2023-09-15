@@ -2,9 +2,20 @@ import { RmqService } from '@app/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { Controller } from '@nestjs/common';
 import { CommunityService } from './community.service';
-import { UserType } from '@app/common/type/user.type';
+import { CommunityMessageTypeFromCommunity } from './types/community.message.type';
 export type GettingDataFromAuthService = {
   userIds: string[];
+};
+export type GettingCommunityAndUserId = {
+  communityId: string;
+  userId: string;
+};
+export type GettingDataFromMessageService = {
+  messageId: string;
+  communityId: string;
+};
+export type ResponseFromMessageServiceWithMessages = {
+  messages: CommunityMessageTypeFromCommunity[];
 };
 @Controller()
 export class CommunityController {
@@ -31,6 +42,42 @@ export class CommunityController {
   ) {
     try {
       await this.communityService.receiveUsersFromAuthService(data);
+      this.rmqService.ack(context);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  @EventPattern('checkIfUserIsInCommunity')
+  async checkIfUserIsInCommunity(
+    @Payload() data: GettingCommunityAndUserId,
+    @Ctx() context: RmqContext,
+  ) {
+    try {
+      await this.communityService.checkIfUserIsInCommunity(data);
+      this.rmqService.ack(context);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  @EventPattern('sendCommunityMessagesWithUsers')
+  async GetCommunityMessage(
+    @Payload() data: ResponseFromMessageServiceWithMessages,
+    @Ctx() context: RmqContext,
+  ) {
+    try {
+      await this.communityService.getCommunityMessagesFromMessageService(data);
+      this.rmqService.ack(context);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  @EventPattern('sendMessageToCommunity')
+  async updateCommunityMessage(
+    @Payload() data: GettingDataFromMessageService,
+    @Ctx() context: RmqContext,
+  ) {
+    try {
+      await this.communityService.updateCommunityMessage(data);
       this.rmqService.ack(context);
     } catch (error) {
       console.log(error);

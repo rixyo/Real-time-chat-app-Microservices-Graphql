@@ -7,6 +7,7 @@ import { UseGuards } from '@nestjs/common';
 import { AssignUserToCommunity } from './inputs/assignuser.input';
 import { AssignUserResponseType } from './assignuser.type';
 import { UserType } from '@app/common/type/user.type';
+import { CommunityMessageTypeFromCommunity } from './types/community.message.type';
 
 @Resolver((of) => CommunityType)
 export class CommunityResolver {
@@ -49,5 +50,9 @@ export class CommunityResolver {
   @UseGuards(AuthGuard)
   async getUsersFromCommunity(@Args('id') id: string) {
     return await this.communityService.getCommunityUsers(id);
+  }
+  @Query((returns) => [CommunityMessageTypeFromCommunity])
+  async getCommunityMessages(@Args('id') id: string) {
+    return await this.communityService.getCommunityMessages(id);
   }
 }

@@ -17,4 +17,6 @@ export class CommunityType {
   updatedAt: Date;
   @Field((type) => [ID])
   userIds: string[];
+  @Field((type) => [ID])
+  messageIds: string[];
 }

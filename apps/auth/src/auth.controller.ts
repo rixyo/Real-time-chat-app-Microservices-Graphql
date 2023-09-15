@@ -5,6 +5,10 @@ import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 export type GettingDataFromCommunityService = {
   userIds: string[];
 };
+export type UpdateCreatorCommunityId = {
+  userId: string;
+  communityId: string;
+};
 @Controller()
 export class AuthController {
   constructor(
@@ -30,6 +34,30 @@ export class AuthController {
   ) {
     try {
       await this.authService.sendComunityUser(data);
+      this.rmqService.ack(context);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  @EventPattern('update-user')
+  async updateUser(
+    @Payload() data: UpdateCreatorCommunityId,
+    @Ctx() context: RmqContext,
+  ) {
+    try {
+      await this.authService.updateUserForCommunity(data);
+      this.rmqService.ack(context);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  @EventPattern('getUsersByIdsFromMessageService')
+  async getUsersByIdsFromMessageService(
+    @Payload() data: GettingDataFromCommunityService,
+    @Ctx() context: RmqContext,
+  ) {
+    try {
+      await this.authService.sendUsersToMessageService(data);
       this.rmqService.ack(context);
     } catch (error) {
       console.log(error);
