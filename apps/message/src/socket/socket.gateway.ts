@@ -33,4 +33,13 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log(data);
     this.server.emit('chatMessage', data);
   }
+  @SubscribeMessage('DirectMessage')
+  handleDirectMessage(
+    @MessageBody() data: CommunityMessageType,
+    @ConnectedSocket() client: Socket,
+  ) {
+    // Handle and broadcast the chat message
+    console.log(data);
+    this.server.emit('DirectMessage', data);
+  }
 }

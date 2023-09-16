@@ -14,6 +14,7 @@ import { lastValueFrom } from 'rxjs';
 import {
   GettingDataFromCommunityService,
   UpdateCreatorCommunityId,
+  UpdateUserMessage,
 } from './auth.controller';
 import { DeleteType } from './type/delete.type';
 
@@ -108,6 +109,20 @@ export class AuthService {
         },
       ),
     );
+  }
+  async updateUserMessage(data: UpdateUserMessage): Promise<void> {
+    const sender = await this.userRepository.findOne({
+      where: { id: data.senderId },
+    });
+    const receiver = await this.userRepository.findOne({
+      where: { id: data.receiverId },
+    });
+    if (sender.messageIds.includes(data.messageId)) return;
+    if (receiver.messageIds.includes(data.messageId)) return;
+    sender.messageIds.push(data.messageId);
+    receiver.messageIds.push(data.messageId);
+    await this.userRepository.save(sender);
+    await this.userRepository.save(receiver);
   }
   // this method is used to send back users to message service
   async sendUsersToMessageService(data: any): Promise<void> {

@@ -1,6 +1,7 @@
+import { UserType } from '@app/common/type/user.type';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-@ObjectType('CommunityMessage')
-export class CommunityMessageType {
+@ObjectType('UserDirectMessageTypes')
+export class UserDirectMessageTypes {
   @Field((type) => ID)
   id: string;
   @Field()
@@ -8,11 +9,9 @@ export class CommunityMessageType {
   @Field({ nullable: true })
   fileUrl?: string;
   @Field()
-  userId: string;
-  @Field()
-  communityId: string;
-  @Field()
   createdAt: Date;
   @Field()
   updatedAt: Date;
+  @Field((type) => UserType)
+  user: UserType;
 }

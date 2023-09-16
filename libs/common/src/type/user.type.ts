@@ -13,4 +13,6 @@ export class UserType {
   updatedAt: Date;
   @Field((type) => [ID])
   communityIds: string[];
+  @Field((type) => [ID])
+  messageIds: string[];
 }

@@ -13,6 +13,7 @@ import { SocketModule } from './socket/socket.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { GraphQLUserInterceptor } from '@app/common/interceptor/user.interceptor';
 import { MessageController } from './message.controller';
+import { UserDirectMessageResolver } from './direct.message.resolver';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -42,7 +43,9 @@ import { MessageController } from './message.controller';
   ],
   providers: [
     MessageService,
+    UserDirectMessageResolver,
     MessageResolver,
+
     {
       provide: APP_INTERCEPTOR,
       useClass: GraphQLUserInterceptor,

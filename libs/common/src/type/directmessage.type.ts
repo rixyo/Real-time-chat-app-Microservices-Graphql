@@ -1,6 +1,7 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
-@ObjectType('CommunityMessage')
-export class CommunityMessageType {
+import { Field, ObjectType, ID } from '@nestjs/graphql';
+
+@ObjectType()
+export class UserDirectMessageType {
   @Field((type) => ID)
   id: string;
   @Field()
@@ -8,9 +9,9 @@ export class CommunityMessageType {
   @Field({ nullable: true })
   fileUrl?: string;
   @Field()
-  userId: string;
+  senderId: string;
   @Field()
-  communityId: string;
+  receiverId: string;
   @Field()
   createdAt: Date;
   @Field()

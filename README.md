@@ -1,73 +1,42 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Real-Time Chat App
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Welcome to the Real-Time Chat App, a modern chat application built with cutting-edge technologies for real-time communication.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Features
 
-## Description
+- **User Authentication**: Secure user authentication and authorization.
+- **Create Communities**: Users can create their own communities.
+- **Add Users to Communities**: Admins can add users to communities.
+- **Community Messaging**: Send and receive messages within communities.
+- **Direct Messaging**: Users can send direct messages to each other.
+- **Event-Driven Architecture**: Built with a microservices architecture using RabbitMQ for event handling.
+- **Database Per Service**: Each microservice manages its own PostgreSQL database.
+- **Dockerized**: Application components are containerized using Docker.
+- **Kubernetes Deployment**: Deploy the app on Kubernetes for scalability and manageability.
+- **Real-Time Communication**: Implemented real-time messaging using Socket.io.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Technologies Used
 
-## Installation
+- **Nest.js**: A progressive Node.js framework for building efficient and scalable server-side applications.
+- **GraphQL**: A query language for APIs, providing a more efficient and powerful alternative to REST.
+- **PostgreSQL**: A robust open-source relational database.
+- **RabbitMQ**: A message broker for implementing a distributed system with a message-driven architecture.
+- **Docker**: Containerization platform for packaging applications and their dependencies.
+- **Kubernetes**: Container orchestration platform for automating the deployment, scaling, and management of containerized applications.
+- **Socket.io**: Real-time, bidirectional communication between clients and the server.
 
-```bash
-$ yarn install
-```
+## Getting Started
 
-## Running the app
+### Prerequisites
 
-```bash
-# development
-$ yarn run start
+- Install Node.js: [Node.js Official Website](https://nodejs.org/)
+- Install Docker: [Docker Official Website](https://www.docker.com/)
+- Install Kubernetes: [Kubernetes Official Website](https://kubernetes.io/)
 
-# watch mode
-$ yarn run start:dev
+### Installation
 
-# production mode
-$ yarn run start:prod
-```
+1. Clone the repository:
 
-## Test
+   ```bash
+   git clone https://github.com/rixyo/Real-time-chat-app-Microservices-Graphql
 
-```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).

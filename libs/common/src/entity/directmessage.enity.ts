@@ -1,16 +1,17 @@
-import { Column, PrimaryGeneratedColumn, Entity } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+
 @Entity()
-export class CommunityMessage {
+export class DirectMessage {
   @PrimaryGeneratedColumn('uuid')
   id: string;
   @Column({ length: 100 })
   content: string;
   @Column({ nullable: true })
-  fileUrl: string;
+  fileUrl?: string;
   @Column()
-  userId: string;
+  senderId: string;
   @Column()
-  communityId: string;
+  receiverId: string;
   @Column({ default: new Date() })
   createdAt: Date;
   @Column({ nullable: true })

@@ -9,6 +9,11 @@ export type UpdateCreatorCommunityId = {
   userId: string;
   communityId: string;
 };
+export type UpdateUserMessage = {
+  senderId: string;
+  receiverId: string;
+  messageId: string;
+};
 @Controller()
 export class AuthController {
   constructor(
@@ -58,6 +63,18 @@ export class AuthController {
   ) {
     try {
       await this.authService.sendUsersToMessageService(data);
+      this.rmqService.ack(context);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  @EventPattern('updateUserMessage')
+  async updateUserMessage(
+    @Payload() data: UpdateUserMessage,
+    @Ctx() context: RmqContext,
+  ) {
+    try {
+      await this.authService.updateUserMessage(data);
       this.rmqService.ack(context);
     } catch (error) {
       console.log(error);

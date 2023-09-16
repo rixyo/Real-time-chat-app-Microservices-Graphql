@@ -4,10 +4,11 @@ import { MessageService } from './message.service';
 import { AuthGuard, CurrentUser, JWTUserType } from '@app/common';
 import { sendMessageToCommunity } from './inputs/communitmessage.input';
 import { UseGuards } from '@nestjs/common';
+
 @Resolver((of) => CommunityMessageType)
 export class MessageResolver {
   constructor(private messageService: MessageService) {}
-  @Query((returns) => CommunityMessageType)
+  @Query((returns) => [CommunityMessageType])
   async getMessage(@Args('id') id: string) {
     return 'Hello World';
   }
