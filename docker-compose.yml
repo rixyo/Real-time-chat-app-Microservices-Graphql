@@ -9,7 +9,7 @@ services:
       - ./apps/auth/.env
     container_name: auth-service
     networks:
-      - my_network
+      -  new_network
     depends_on:
       - auth-data
       - rabbitmq
@@ -27,7 +27,7 @@ services:
       - ./apps/community/.env
     container_name: community-service
     networks:
-      - my_network
+      -  new_network
     depends_on:
       - community-data
       - rabbitmq
@@ -45,7 +45,7 @@ services:
       - ./apps/message/.env
     container_name: message-service
     networks:
-      - my_network
+      - new_network
     depends_on:
       - message-data
       - rabbitmq

@@ -148,8 +148,8 @@ export class AuthService {
     return await bcrypt.compare(password, hashPassword);
   }
   private createToken(userId: string, fullName: string): string {
-    const expiresIn = 60 * 60; // an hour
-    const secret = 'mysupersecret';
+    const expiresIn = process.env.JWT_EXPIRES_IN; // an hour
+    const secret = process.env.JWT_SECRET;
     const dataStoredInToken = {
       id: userId,
       fullName: fullName,
